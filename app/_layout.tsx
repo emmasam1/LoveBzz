@@ -1,47 +1,37 @@
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
-import { useFonts } from "expo-font";
-import "react-native-gesture-handler";
-import * as SplashScreen from "expo-splash-screen";
-import { StatusBar } from "expo-status-bar";
-import { useEffect } from "react";
-import "react-native-reanimated";
-import React from "react";
-
-import { useColorScheme } from "@/hooks/useColorScheme";
+import React, { useState, useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { View, ActivityIndicator } from "react-native";
 import DrawerNav from "@/navigation/DrawerNav";
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+import OnboardingScreen from "@/screens/OnboardingScreen";
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-
-  // Load custom fonts
-  const [fontsLoaded] = useFonts({
-    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
-  });
+  const [isOnboardingComplete, setIsOnboardingComplete] = useState<
+    boolean | null
+  >(null);
 
   useEffect(() => {
-    if (fontsLoaded) {
-      SplashScreen.hideAsync().catch(() => {
-        console.warn("SplashScreen.hideAsync failed");
-      });
-    }
-  }, [fontsLoaded]);
+    const checkOnboardingStatus = async () => {
+      const completed = await AsyncStorage.getItem("onboardingComplete");
+      setIsOnboardingComplete(completed === "true");
+    };
+    checkOnboardingStatus();
+  }, []);
 
-  // Return null while fonts are loading
-  if (!fontsLoaded) {
-    return null;
+  const handleOnboardingComplete = () => {
+    setIsOnboardingComplete(true); // Mark onboarding as complete
+  };
+
+  if (isOnboardingComplete === null) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#304FFE" />
+      </View>
+    );
   }
 
-  return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <DrawerNav />
-      <StatusBar style="auto" />
-    </ThemeProvider>
+  return isOnboardingComplete ? (
+    <DrawerNav />
+  ) : (
+    <OnboardingScreen onComplete={handleOnboardingComplete} />
   );
 }
