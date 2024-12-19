@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  useColorScheme,
+} from "react-native";
 import { Audio } from "expo-av";
 import { useNavigation } from "@react-navigation/native";
 
@@ -7,6 +14,7 @@ export default function App() {
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [isPaired, setIsPaired] = useState(false); // Track pairing status
   const navigation = useNavigation(); // Access navigation object
+  const colorScheme = useColorScheme(); // Get system color scheme (light/dark)
 
   // Function to play sound
   const playSound = async () => {
@@ -47,15 +55,21 @@ export default function App() {
     }
   };
 
+  // Styles for light and dark mode
+  const dynamicStyles = colorScheme === "dark" ? darkStyles : lightStyles;
+
   return (
-    <View style={styles.container}>
-      <TouchableOpacity onPress={playSound} style={styles.btn}>
-        <Text style={styles.heart}>❤️</Text>
+    <View style={[styles.container, dynamicStyles.container]}>
+      <TouchableOpacity
+        onPress={playSound}
+        style={[styles.btn, dynamicStyles.btn]}
+      >
+        <Text style={[styles.heart, dynamicStyles.heart]}>❤️</Text>
       </TouchableOpacity>
-      <Text style={styles.text}>
+      <Text style={[styles.text, dynamicStyles.text]}>
         {isPaired
           ? "Tap the heart to play sound!"
-          : "Please pair your device to play the sound."}
+          : "Please pair your device to send a buzz."}
       </Text>
     </View>
   );
@@ -66,11 +80,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fff",
   },
   heart: {
     fontSize: 100,
-    color: "red",
   },
   text: {
     fontSize: 20,
@@ -78,7 +90,38 @@ const styles = StyleSheet.create({
   },
   btn: {
     borderRadius: 100, // Fixed border radius syntax
-    backgroundColor: "#f2f2f2",
     padding: 20,
+  },
+});
+
+// Light mode styles
+const lightStyles = StyleSheet.create({
+  container: {
+    backgroundColor: "#fff",
+  },
+  heart: {
+    color: "red",
+  },
+  text: {
+    color: "#000",
+  },
+  btn: {
+    backgroundColor: "#f2f2f2",
+  },
+});
+
+// Dark mode styles
+const darkStyles = StyleSheet.create({
+  container: {
+    backgroundColor: "#000",
+  },
+  heart: {
+    color: "#ff6b6b",
+  },
+  text: {
+    color: "#fff",
+  },
+  btn: {
+    backgroundColor: "#333",
   },
 });

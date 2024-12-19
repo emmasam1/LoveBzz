@@ -1,5 +1,6 @@
 import React, { useCallback } from "react";
-import { StyleSheet, View, SafeAreaView } from "react-native";
+import { StyleSheet, View, SafeAreaView, Text } from "react-native";
+import { Theme } from "@react-navigation/native"; // Correct type
 import Animated, {
   useSharedValue,
   useAnimatedRef,
@@ -17,7 +18,7 @@ const pages = [
   },
   {
     text: "Send a gentle buzz to show you care.",
-    image: require("../assets/images/stay_connected.png"),
+    image: require("../assets/images/buzz.png"),
   },
   {
     text: "Stay connected, anytime, anywhere.",
@@ -26,10 +27,14 @@ const pages = [
 ];
 
 type OnboardingScreenProps = {
-  onComplete: () => void; // Callback when onboarding is complete
+  onComplete: () => void;
+  theme: Theme; // Use the correct Theme type
 };
 
-const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
+const OnboardingScreen: React.FC<OnboardingScreenProps> = ({
+  onComplete,
+  theme,
+}) => {
   const x = useSharedValue(0);
   const flatListIndex = useSharedValue(0);
   const flatListRef = useAnimatedRef<
@@ -47,9 +52,8 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
   });
 
   const onPressGetStarted = useCallback(async () => {
-    // Save onboarding completion flag
     await AsyncStorage.setItem("onboardingComplete", "true");
-    onComplete(); // Notify parent that onboarding is complete
+    onComplete();
   }, [onComplete]);
 
   const renderItem = useCallback(
@@ -60,13 +64,18 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
       item: { text: string; image: any };
       index: number;
     }) => {
-      return <ListItem item={item} index={index} x={x} />;
+      return <ListItem item={item} index={index} x={x} theme={theme} />;
     },
-    [x]
+    [x, theme]
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[
+        styles.container,
+        { backgroundColor: theme.colors.background }, // Apply theme background color
+      ]}
+    >
       <Animated.FlatList
         ref={flatListRef}
         onScroll={scrollHandle}
@@ -85,7 +94,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
           currentIndex={flatListIndex}
           length={pages.length}
           flatListRef={flatListRef}
-          onComplete={onPressGetStarted} // Pass the callback here
+          onComplete={onPressGetStarted}
         />
       </View>
     </SafeAreaView>

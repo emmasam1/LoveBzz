@@ -1,24 +1,27 @@
+import React from "react";
 import {
   View,
   useWindowDimensions,
   ImageURISource,
   StyleSheet,
 } from "react-native";
-import React from "react";
 import Animated, {
   Extrapolate,
   interpolate,
   useAnimatedStyle,
 } from "react-native-reanimated";
+import { Theme } from "@react-navigation/native";
 
 type Props = {
   item: { text: string; image: ImageURISource };
   index: number;
   x: Animated.SharedValue<number>;
+  theme: Theme; // Add theme to Props
 };
 
-const ListItem = ({ item, index, x }: Props) => {
+const ListItem = ({ item, index, x, theme }: Props) => {
   const { width: SCREEN_WIDTH } = useWindowDimensions();
+
   const rnImageStyle = useAnimatedStyle(() => {
     const translateY = interpolate(
       x.value,
@@ -74,14 +77,20 @@ const ListItem = ({ item, index, x }: Props) => {
       transform: [{ translateY }],
     };
   }, [index, x]);
+
   return (
     <View style={[styles.itemContainer, { width: SCREEN_WIDTH }]}>
       <Animated.Image
         source={item.image}
-        style={rnImageStyle}
-        resizeMode="contain"
+        style={[rnImageStyle]} // Use only animated styles
       />
-      <Animated.Text style={[styles.textItem, rnTextStyle]}>
+      <Animated.Text
+        style={[
+          styles.textItem,
+          rnTextStyle,
+          { color: theme.colors.text }, // Set text color dynamically
+        ]}
+      >
         {item.text}
       </Animated.Text>
     </View>
@@ -100,6 +109,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     lineHeight: 41,
     fontSize: 34,
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
+    fontFamily: "Quicksand",
   },
 });

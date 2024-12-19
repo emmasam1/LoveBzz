@@ -5,12 +5,14 @@ import Animated, {
   withTiming,
   useAnimatedStyle,
 } from "react-native-reanimated";
+import { Theme } from "@react-navigation/native";
 
 type Props = {
   currentIndex: Animated.SharedValue<number>;
   length: number;
   flatListRef: any;
   onComplete: () => void; // Callback when onboarding is complete
+  theme: Theme; // Add theme to Props
 };
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -86,6 +88,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     overflow: "hidden",
+    fontFamily: "Quicksand",
   },
   textStyle: {
     color: "white",
