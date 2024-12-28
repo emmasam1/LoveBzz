@@ -6,21 +6,82 @@
 const tintColorLight = "#0a7ea4";
 const tintColorDark = "#fff";
 
+// Example of Colors.ts (or similar)
 export const Colors = {
   light: {
-    text: "#11181C",
-    background: "#fff",
-    tint: tintColorLight,
-    icon: "#687076",
-    tabIconDefault: "#687076",
-    tabIconSelected: tintColorLight,
+    container: {
+      backgroundColor: "#fff",
+    },
+    heart: {
+      color: "red",
+    },
+    text: {
+      color: "#000",
+    },
+    btn: {
+      backgroundColor: "#f2f2f2",
+    },
+    primaryButton: {
+      backgroundColor: "#0a7ea4",
+    },
+    secondaryButton: {
+      backgroundColor: "#3498db",
+    },
+    modalOverlay: {
+      backgroundColor: "rgba(255, 255, 255, 0.9)", // Light theme overlay
+    },
+    modalContent: {
+      backgroundColor: "#fff",
+    },
+    settings: {
+      color: "black",
+    },
+    icon: {
+      borderColor: "black",
+    },
+    submitButton: {
+      backgroundColor: "#3498db",
+    },
+    modalTitle: {
+      color: "#000",
+    },
   },
   dark: {
-    text: "#ECEDEE",
-    background: "#151718",
-    tint: tintColorDark,
-    icon: "#9BA1A6",
-    tabIconDefault: "#9BA1A6",
-    tabIconSelected: tintColorDark,
+    container: {
+      backgroundColor: "#000",
+    },
+    heart: {
+      color: "#ff6b6b",
+    },
+    text: {
+      color: "#fff",
+    },
+    btn: {
+      backgroundColor: "#333",
+    },
+    primaryButton: {
+      backgroundColor: "#333",
+    },
+    secondaryButton: {
+      backgroundColor: "#3498db",
+    },
+    modalOverlay: {
+      backgroundColor: "rgba(0, 0, 0, 0.8)", // Dark theme overlay
+    },
+    modalContent: {
+      backgroundColor: "#333",
+    },
+    settings: {
+      color: "white",
+    },
+    icon: {
+      borderColor: "white",
+    },
+    submitButton: {
+      backgroundColor: "#333",
+    },
+    modalTitle: {
+      color: "#fff",
+    },
   },
 };

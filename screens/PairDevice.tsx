@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useContext } from "react";
 import {
   View,
   Text,
@@ -16,8 +16,15 @@ import { CameraView, useCameraPermissions } from "expo-camera";
 import { AntDesign } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
+import { ThemeContext } from "@/context/ThemeContext"; // import ThemeContext
 
 const PairDevice = () => {
+  const context = useContext(ThemeContext);
+  if (!context) {
+    throw new Error("ThemeContext must be used within a ThemeProvider");
+  }
+
+  const { theme } = context; // get the current theme from context
   const [showPairingModal, setShowPairingModal] = useState(false);
   const [showCodeInput, setShowCodeInput] = useState(false);
   const [showCodeModal, setShowCodeModal] = useState(false);
@@ -38,14 +45,13 @@ const PairDevice = () => {
     updatedOtp[index] = value;
     setOtp(updatedOtp);
 
-    // Automatically move to the next field when a character is entered
     if (value && index < otp.length - 1) {
       otpRefs.current[index + 1].focus();
     }
   };
 
   const handleOtpSubmit = () => {
-    const enteredOtp = otp.join(""); // Combine OTP inputs into a single string
+    const enteredOtp = otp.join("");
     if (enteredOtp.length === otp.length) {
       Alert.alert("OTP Entered", enteredOtp);
     } else {
@@ -54,17 +60,14 @@ const PairDevice = () => {
   };
 
   const handleCopyToClipboard = async () => {
-    await Clipboard.setStringAsync(pairCode); // Copy the code to clipboard
-
-    // Hide "Tap to Copy" and show "Copied"
+    await Clipboard.setStringAsync(pairCode);
     setShowTapToCopy(false);
     setIsCopied(true);
 
-    // Reset the states after a delay
     setTimeout(() => {
-      setShowTapToCopy(true); // Show "Tap to Copy" again for future interactions
+      setShowTapToCopy(true);
       setIsCopied(false);
-    }, 1500); // 1.5 seconds delay
+    }, 1500);
   };
 
   const { width } = Dimensions.get("window");
@@ -91,12 +94,12 @@ const PairDevice = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Pair Your Device</Text>
+    <View style={[styles.container, theme.container]}>
+      <Text style={[styles.title, theme.text]}>Pair Your Device</Text>
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-          style={styles.primaryButton}
+          style={[styles.primaryButton, theme.primaryButton]}
           onPress={() => setShowPairingModal(true)}
         >
           <AntDesign name="qrcode" size={20} color="#fff" />
@@ -104,7 +107,7 @@ const PairDevice = () => {
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.secondaryButton}
+          style={[styles.secondaryButton, theme.secondaryButton]}
           onPress={() => setShowCodeOptionModal(true)}
         >
           <AntDesign name="key" size={20} color="#fff" />
@@ -119,20 +122,22 @@ const PairDevice = () => {
         animationType="slide"
         onRequestClose={() => setShowPairingModal(false)}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Select Pairing Option</Text>
+        <View style={[styles.modalOverlay, theme.modalOverlay]}>
+          <View style={[styles.modalContent, theme.modalContent]}>
+            <Text style={[styles.modalTitle, theme.text]}>
+              Select Pairing Option
+            </Text>
 
             <TouchableOpacity
               style={styles.closeIcon}
               onPress={() => setShowPairingModal(false)}
             >
-              <AntDesign name="close" size={24} color="black" />
+              <AntDesign name="close" size={24} style={theme.text} />
             </TouchableOpacity>
 
             <View style={styles.buttonContainer}>
               <TouchableOpacity
-                style={styles.primaryButton}
+                style={[styles.primaryButton, theme.primaryButton]}
                 onPress={() => {
                   generateCode();
                   setShowPairingModal(false);
@@ -144,7 +149,7 @@ const PairDevice = () => {
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={styles.secondaryButton}
+                style={[styles.secondaryButton, theme.secondaryButton]}
                 onPress={() => {
                   setShowPairingModal(false);
                   setShowCamera(true);
@@ -166,20 +171,22 @@ const PairDevice = () => {
         animationType="slide"
         onRequestClose={() => setShowCodeOptionModal(false)}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Select Pairing Option</Text>
+        <View style={[styles.modalOverlay, theme.modalOverlay]}>
+          <View style={[styles.modalContent, theme.modalContent]}>
+            <Text style={[styles.modalTitle, theme.text]}>
+              Select Pairing Option
+            </Text>
 
             <TouchableOpacity
               style={styles.closeIcon}
               onPress={() => setShowCodeOptionModal(false)}
             >
-              <AntDesign name="close" size={24} color="black" />
+              <AntDesign name="close" size={24} style={theme.text} />
             </TouchableOpacity>
 
             <View style={styles.buttonContainer}>
               <TouchableOpacity
-                style={styles.primaryButton}
+                style={[styles.primaryButton, theme.primaryButton]}
                 onPress={() => {
                   generateCode();
                   setShowCodeOptionModal(false);
@@ -191,7 +198,7 @@ const PairDevice = () => {
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={styles.secondaryButton}
+                style={[styles.secondaryButton, theme.secondaryButton]}
                 onPress={() => {
                   setShowCodeOptionModal(false);
                   setEnterCode(true);
@@ -212,17 +219,17 @@ const PairDevice = () => {
         animationType="slide"
         onRequestClose={() => setShowQRModal(false)}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
+        <View style={[styles.modalOverlay, theme.modalOverlay]}>
+          <View style={[styles.modalContent, theme.modalContent]}>
             <TouchableOpacity
               style={styles.closeIcon}
               onPress={() => setShowQRModal(false)}
             >
-              <AntDesign name="close" size={24} color="black" />
+              <AntDesign name="close" size={24} style={theme.text} />
             </TouchableOpacity>
-            <Text style={styles.modalTitle}>Your QR Code</Text>
+            <Text style={[styles.modalTitle, theme.text]}>Your QR Code</Text>
             {pairCode ? (
-              <QRCode value="https://example.com/pair" size={width * 0.6} />
+              <QRCode value="https://example.com/pair" size={width * 0.5} />
             ) : (
               <Text>Generating QR Code...</Text>
             )}
@@ -236,39 +243,38 @@ const PairDevice = () => {
         transparent
         animationType="slide"
         onRequestClose={() => setEnterCode(false)}
+        style={styles.modalColor}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
+        <View style={[styles.modalOverlay, theme.modalOverlay]}>
+          <View style={[styles.modalContent, theme.modalContent]}>
             <TouchableOpacity
               style={styles.closeIcon}
               onPress={() => setEnterCode(false)}
             >
-              <AntDesign name="close" size={24} color="black" />
+              <AntDesign name="close" size={24} style={theme.text} />
             </TouchableOpacity>
 
-            <Text style={styles.modalTitle}>Enter Code</Text>
+            <Text style={[styles.modalTitle, theme.text]}>Enter Code</Text>
 
             <View style={styles.otpContainer}>
               {otp.map((value, index) => (
                 <TextInput
                   key={index}
-                  style={styles.otpInput}
+                  ref={(ref) => (otpRefs.current[index] = ref)}
+                  style={[styles.otpInput, theme.inputBackground]}
+                  maxLength={1}
+                  keyboardType="numeric"
                   value={value}
                   onChangeText={(text) => handleOtpChange(text, index)}
-                  maxLength={1} // Restrict each field to 1 character
-                  keyboardType="default" // Allow alphanumeric input
-                  autoCapitalize="characters" // Automatically capitalize input
-                  ref={(ref) => (otpRefs.current[index] = ref)} // Assign ref to each input
+                  autoFocus={index === 0}
                 />
               ))}
             </View>
-
             <TouchableOpacity
-              style={styles.primaryBtn}
+              style={[styles.submitButton, theme.submitButton]}
               onPress={handleOtpSubmit}
             >
-              <MaterialIcons name="send" size={20} color="#fff" />
-              <Text style={styles.buttonText}>Send OTP</Text>
+              <Text style={styles.buttonText}>Submit OTP</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -281,67 +287,34 @@ const PairDevice = () => {
         animationType="slide"
         onRequestClose={() => setShowCodeModal(false)}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
+        <View style={[styles.modalOverlay, theme.modalOverlay]}>
+          <View style={[styles.modalContent, theme.modalContent]}>
             <TouchableOpacity
               style={styles.closeIcon}
               onPress={() => setShowCodeModal(false)}
             >
-              <AntDesign name="close" size={24} color="black" />
+              <AntDesign name="close" size={24} style={theme.text} />
             </TouchableOpacity>
 
-            <Text style={styles.modalTitle}>Your Code</Text>
+            <Text style={[styles.modalTitle, theme.text]}>Your Code</Text>
 
             <TouchableOpacity onPress={handleCopyToClipboard}>
-              <Text style={styles.generatedCode}>
+              <Text style={[styles.generatedCode, theme.text]}>
                 {pairCode || "Generating..."}
               </Text>
             </TouchableOpacity>
 
             {/* Show "Tap to Copy" or "Copied" */}
             {showTapToCopy && (
-              <Text style={styles.copiedTooltip}>Tap to Copy</Text>
+              <Text style={[styles.copiedTooltip, theme.text]}>
+                Tap to Copy
+              </Text>
             )}
             {isCopied && (
               <View style={styles.copiedTooltip}>
-                <Text style={styles.tooltipText}>Copied</Text>
+                <Text style={[styles.tooltipText, theme.text]}>Copied</Text>
               </View>
             )}
-          </View>
-        </View>
-      </Modal>
-
-      {/* Enter Code Modal */}
-      <Modal
-        visible={showCodeInput}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setShowCodeInput(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <TouchableOpacity
-              style={styles.closeIcon}
-              onPress={() => setShowCodeInput(false)}
-            >
-              <AntDesign name="close" size={24} color="black" />
-            </TouchableOpacity>
-            <Text style={styles.modalTitle}>Enter Pairing Code</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter code"
-              value={inputCode}
-              onChangeText={setInputCode}
-            />
-            <TouchableOpacity
-              style={styles.primaryButton}
-              onPress={() => {
-                Alert.alert("Code Entered", inputCode);
-                setShowCodeInput(false);
-              }}
-            >
-              <Text style={styles.buttonText}>Submit</Text>
-            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -388,82 +361,99 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    padding: 20,
-    backgroundColor: "#f8f9fa",
+    alignItems: "center",
   },
   title: {
     fontSize: 24,
-    fontWeight: "700",
-    textAlign: "center",
-    marginBottom: 20,
-    color: "#2c3e50",
+    fontWeight: "bold",
   },
   buttonContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    padding: 10,
+    marginTop: 20,
+    justifyContent: "center",
   },
   primaryButton: {
+    backgroundColor: "#3498db",
+    borderRadius: 8,
+    padding: 10,
+    marginRight: 10,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#1abc9c",
-    padding: 15,
-    borderRadius: 8,
-    flex: 1,
-    marginHorizontal: 5,
   },
   secondaryButton: {
+    backgroundColor: "#2ecc71",
+    borderRadius: 8,
+    padding: 10,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#3498db",
-    padding: 15,
-    borderRadius: 8,
-    flex: 1,
-    marginHorizontal: 5,
   },
   buttonText: {
     color: "#fff",
-    fontWeight: "600",
-    marginLeft: 10,
+    marginLeft: 8,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
     justifyContent: "center",
     alignItems: "center",
+    // backgroundColor: "rgba(0, 0, 0, 0.7)",
+    // position: "absolute",
+    // top: 0, // Adjust top for status bar height
+    // left: 0,
+    // right: 0,
+    // bottom: 0,
+    // zIndex: 9999,
   },
   modalContent: {
-    width: "85%",
+    width: "80%",
+    padding: 20,
     backgroundColor: "#fff",
-    padding: 10,
-    borderRadius: 12,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
     alignItems: "center",
   },
   modalTitle: {
     fontSize: 20,
-    fontWeight: "700",
-    marginBottom: 20,
-    color: "#2c3e50",
-  },
-  generatedCode: {
-    fontSize: 32,
     fontWeight: "bold",
-    color: "#34495e",
-    marginBottom: 50,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    padding: 10,
-    width: "100%",
-    marginVertical: 10,
-    fontSize: 16,
+    marginBottom: 20,
   },
   closeIcon: {
     position: "absolute",
     top: 10,
     right: 10,
+  },
+  otpContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 20,
+  },
+  otpInput: {
+    width: 50,
+    height: 50,
+    borderRadius: 8,
+    textAlign: "center",
+    fontSize: 20,
+    borderWidth: 1,
+    margin: 5,
+  },
+  submitButton: {
+    backgroundColor: "#3498db",
+    borderRadius: 8,
+    padding: 10,
+    alignItems: "center",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  camera: {
+    flex: 1,
+    width: "100%",
   },
   overlayContainer: {
     flex: 1,
@@ -481,16 +471,6 @@ const styles = StyleSheet.create({
     height: 350,
     borderColor: "white",
   },
-  camera: {
-    flex: 1,
-    width: "100%",
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
   copiedTooltip: {
     position: "absolute",
     bottom: 20,
@@ -500,30 +480,30 @@ const styles = StyleSheet.create({
   tooltipText: {
     fontSize: 12,
   },
-  otpContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginBottom: 20,
+  // otpContainer: {
+  //   flexDirection: "row",
+  //   justifyContent: "center",
+  //   marginBottom: 20,
+  // },
+  // otpInput: {
+  //   width: 40,
+  //   height: 50,
+  //   borderWidth: 1,
+  //   borderColor: "#ccc",
+  //   borderRadius: 5,
+  //   textAlign: "center",
+  //   fontSize: 18,
+  //   marginHorizontal: 5,
+  //   color: "#2c3e50",
+  //},
+  generatedCode: {
+    fontSize: 32,
+    fontWeight: "bold",
+    color: "#34495e",
+    marginBottom: 50,
   },
-  otpInput: {
-    width: 40,
-    height: 50,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    textAlign: "center",
-    fontSize: 18,
-    marginHorizontal: 5,
-    color: "#2c3e50",
-  },
-  primaryBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#1abc9c",
-    padding: 10,
-    borderRadius: 8,
-    // flex: 1,
-    // marginHorizontal: 2,
+  modalColor: {
+    backgroundColor: "red",
   },
 });
 

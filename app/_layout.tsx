@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
   DarkTheme,
   DefaultTheme,
-  ThemeProvider,
+  ThemeProvider as NavigationThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
@@ -10,13 +10,19 @@ import { StatusBar } from "expo-status-bar";
 import { View, ActivityIndicator } from "react-native";
 import DrawerNav from "@/navigation/DrawerNav";
 import OnboardingScreen from "@/screens/OnboardingScreen";
-import { useColorScheme } from "@/hooks/useColorScheme";
+import { ThemeProvider, useTheme } from "@/context/ThemeContext"; // Custom ThemeContext
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { tokenCache } from "@/cache";
+import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
+
+  if (!publishableKey) {
+    throw new Error("Add EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in your .env");
+  }
 
   // Load custom fonts
   const [fontsLoaded] = useFonts({
@@ -61,21 +67,37 @@ export default function RootLayout() {
     );
   }
 
-  // Render App
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      {/* StatusBar always rendered */}
-      <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
+    <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
+      <ClerkLoaded>
+        <ThemeProvider>
+          <RootApp
+            isOnboardingComplete={isOnboardingComplete}
+            handleOnboardingComplete={handleOnboardingComplete}
+          />
+        </ThemeProvider>
+      </ClerkLoaded>
+    </ClerkProvider>
+  );
+}
 
-      {/* Conditional navigation */}
+function RootApp({
+  isOnboardingComplete,
+  handleOnboardingComplete,
+}: {
+  isOnboardingComplete: boolean;
+  handleOnboardingComplete: () => void;
+}) {
+  const { theme, isDarkMode } = useTheme(); // Get theme and mode from ThemeContext
+
+  return (
+    <NavigationThemeProvider value={isDarkMode ? DarkTheme : DefaultTheme}>
+      <StatusBar style={isDarkMode ? "light" : "dark"} />
       {isOnboardingComplete ? (
         <DrawerNav />
       ) : (
-        <OnboardingScreen
-          onComplete={handleOnboardingComplete}
-          theme={colorScheme === "dark" ? DarkTheme : DefaultTheme} // Pass theme to OnboardingScreen
-        />
+        <OnboardingScreen onComplete={handleOnboardingComplete} theme={theme} />
       )}
-    </ThemeProvider>
+    </NavigationThemeProvider>
   );
 }

@@ -1,15 +1,15 @@
-import React from "react";
+import React, { useContext } from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import {
   TouchableOpacity,
   StyleSheet,
   useWindowDimensions,
-  useColorScheme,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import HomeScreen from "@/screens/HomeScreen";
 import PairDevice from "@/screens/PairDevice";
 import SettingsScreen from "@/screens/SettingsScreen";
+import { ThemeContext } from "@/context/ThemeContext"; // Import the useTheme hook
 
 // Drawer Navigator
 const Drawer = createDrawerNavigator();
@@ -17,8 +17,14 @@ const Drawer = createDrawerNavigator();
 function DrawerNav() {
   const dimensions = useWindowDimensions();
   const isLargeScreen = dimensions.width >= 768;
-  const colorScheme = useColorScheme();
-  const dynamicStyles = colorScheme === "dark" ? darkStyles : lightStyles;
+
+  // Access theme from ThemeContext
+  const context = useContext(ThemeContext);
+  if (!context) {
+    throw new Error("ThemeContext must be used within a ThemeProvider");
+  }
+
+  const { theme } = context; // Destructure theme from context
 
   return (
     <Drawer.Navigator
@@ -29,13 +35,12 @@ function DrawerNav() {
         headerRight: () => (
           <TouchableOpacity
             onPress={() => navigation.navigate("Settings")} // Navigate to Settings
-            // style={{ marginRight: 15 }}
-            style={[styles.icon, dynamicStyles.icon]}
+            style={[styles.icon, theme.icon]}
           >
             <AntDesign
               name="user" // Correct icon name for AntDesign
               size={24}
-              style={[styles.settings, dynamicStyles.settings]} // Apply dynamic styles
+              style={[styles.settings, theme.settings]} // Apply dynamic styles
             />
           </TouchableOpacity>
         ),
@@ -74,24 +79,24 @@ const styles = StyleSheet.create({
   },
 });
 
-// Light mode styles
-const lightStyles = StyleSheet.create({
-  settings: {
-    color: "black",
-  },
-  icon: {
-    borderColor: "black",
-  },
-});
+// // Light mode styles
+// const lightStyles = StyleSheet.create({
+//   settings: {
+//     color: "black",
+//   },
+//   icon: {
+//     borderColor: "black",
+//   },
+// });
 
-// Dark mode styles
-const darkStyles = StyleSheet.create({
-  settings: {
-    color: "white",
-  },
-  icon: {
-    borderColor: "white",
-  },
-});
+// // Dark mode styles
+// const darkStyles = StyleSheet.create({
+//   settings: {
+//     color: "white",
+//   },
+//   icon: {
+//     borderColor: "white",
+//   },
+// });
 
 export default DrawerNav;

@@ -7,13 +7,23 @@ import {
   Switch,
   TextInput,
   Modal,
-  useColorScheme,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons"; // Import Ionicons for close button
+import { Ionicons } from "@expo/vector-icons";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { useTheme } from "@/context/ThemeContext";
+
+// const useThemeColor = () => {
+//   const [isDarkMode, setIsDarkMode] = useState(false);
+//   const toggleTheme = () => setIsDarkMode((prev) => !prev);
+
+//   return { isDarkMode, toggleTheme };
+// };
 
 const SettingsScreen = () => {
-  const colorScheme = useColorScheme();
-  const isDarkMode = colorScheme === "dark";
+  // const { isDarkMode, toggleTheme } = useThemeColor(); // Access theme state and toggle function
+  // const dynamicStyles = isDarkMode ? darkStyles : lightStyles;
+
+  const { isDarkMode, toggleTheme } = useTheme();
   const dynamicStyles = isDarkMode ? darkStyles : lightStyles;
 
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
@@ -41,40 +51,14 @@ const SettingsScreen = () => {
     // Implement functionality for subscribing to premium
   };
 
-  const handleNotificationsToggle = (value: boolean) => {
-    setNotificationsEnabled(value);
-    console.log("Notifications toggled:", value);
-    // Implement functionality for notifications toggle
-  };
-
-  const handlePushNotificationsToggle = (value: boolean) => {
-    setPushNotificationsEnabled(value);
-    console.log("Push Notifications toggled:", value);
-    // Implement functionality for push notifications toggle
-  };
-
-  const handleEmailNotificationsToggle = (value: boolean) => {
-    setEmailNotificationsEnabled(value);
-    console.log("Email Notifications toggled:", value);
-    // Implement functionality for email notifications toggle
-  };
-
-  const handlePromotionalNotificationsToggle = (value: boolean) => {
-    setPromotionalNotificationsEnabled(value);
-    console.log("Promotional Notifications toggled:", value);
-    // Implement functionality for promotional notifications toggle
-  };
-
   const handleFeedbackSubmit = () => {
     console.log("Feedback submitted:", feedback);
-    // Here you can send the feedback to an API or store it locally
     setFeedbackModalVisible(false);
-    setFeedback(""); // Clear the feedback text after submission
+    setFeedback("");
   };
 
   return (
     <View style={[baseStyles.container, dynamicStyles.container]}>
-      {/* Remove Ads Option */}
       <TouchableOpacity
         style={[baseStyles.option, dynamicStyles.option]}
         onPress={handleRemoveAds}
@@ -84,7 +68,6 @@ const SettingsScreen = () => {
         </Text>
       </TouchableOpacity>
 
-      {/* Subscribe to Premium */}
       <TouchableOpacity
         style={[baseStyles.option, dynamicStyles.option]}
         onPress={handleSubscribePremium}
@@ -94,65 +77,6 @@ const SettingsScreen = () => {
         </Text>
       </TouchableOpacity>
 
-      {/* Notification Settings */}
-      <View style={[baseStyles.option, dynamicStyles.option]}>
-        <Text style={[baseStyles.optionText, dynamicStyles.text]}>
-          Notifications
-        </Text>
-        <Switch
-          value={notificationsEnabled}
-          onValueChange={handleNotificationsToggle}
-          thumbColor={isDarkMode ? "#4B9CD3" : "#FFFFFF"}
-          trackColor={{ false: "#E5E5E5", true: "#4B9CD3" }}
-        />
-      </View>
-
-      {/* Push Notifications */}
-      {notificationsEnabled && (
-        <View style={[baseStyles.option, dynamicStyles.option]}>
-          <Text style={[baseStyles.optionText, dynamicStyles.text]}>
-            Push Notifications
-          </Text>
-          <Switch
-            value={pushNotificationsEnabled}
-            onValueChange={handlePushNotificationsToggle}
-            thumbColor={isDarkMode ? "#4B9CD3" : "#FFFFFF"}
-            trackColor={{ false: "#E5E5E5", true: "#4B9CD3" }}
-          />
-        </View>
-      )}
-
-      {/* Email Notifications */}
-      {notificationsEnabled && (
-        <View style={[baseStyles.option, dynamicStyles.option]}>
-          <Text style={[baseStyles.optionText, dynamicStyles.text]}>
-            Email Notifications
-          </Text>
-          <Switch
-            value={emailNotificationsEnabled}
-            onValueChange={handleEmailNotificationsToggle}
-            thumbColor={isDarkMode ? "#4B9CD3" : "#FFFFFF"}
-            trackColor={{ false: "#E5E5E5", true: "#4B9CD3" }}
-          />
-        </View>
-      )}
-
-      {/* Promotional Notifications */}
-      {notificationsEnabled && (
-        <View style={[baseStyles.option, dynamicStyles.option]}>
-          <Text style={[baseStyles.optionText, dynamicStyles.text]}>
-            Promotional Notifications
-          </Text>
-          <Switch
-            value={promotionalNotificationsEnabled}
-            onValueChange={handlePromotionalNotificationsToggle}
-            thumbColor={isDarkMode ? "#4B9CD3" : "#FFFFFF"}
-            trackColor={{ false: "#E5E5E5", true: "#4B9CD3" }}
-          />
-        </View>
-      )}
-
-      {/* Feedback Button */}
       <TouchableOpacity
         style={[baseStyles.option, dynamicStyles.option]}
         onPress={() => setFeedbackModalVisible(true)}
@@ -162,12 +86,65 @@ const SettingsScreen = () => {
         </Text>
       </TouchableOpacity>
 
-      {/* Login or Sign Up */}
-      <TouchableOpacity style={baseStyles.button} onPress={handleLoginSignup}>
+      <View style={[baseStyles.option, dynamicStyles.option]}>
+        <Text style={[baseStyles.optionText, dynamicStyles.text]}>
+          Notifications
+        </Text>
+        <Switch
+          value={notificationsEnabled}
+          onValueChange={setNotificationsEnabled}
+          thumbColor={isDarkMode ? "#4B9CD3" : "#FFFFFF"}
+          trackColor={{ false: "#E5E5E5", true: "#4B9CD3" }}
+        />
+      </View>
+
+      {notificationsEnabled && (
+        <>
+          <View style={[baseStyles.option, dynamicStyles.option]}>
+            <Text style={[baseStyles.optionText, dynamicStyles.text]}>
+              Push Notifications
+            </Text>
+            <Switch
+              value={pushNotificationsEnabled}
+              onValueChange={setPushNotificationsEnabled}
+              thumbColor={isDarkMode ? "#4B9CD3" : "#FFFFFF"}
+              trackColor={{ false: "#E5E5E5", true: "#4B9CD3" }}
+            />
+          </View>
+
+          <View style={[baseStyles.option, dynamicStyles.option]}>
+            <Text style={[baseStyles.optionText, dynamicStyles.text]}>
+              Email Notifications
+            </Text>
+            <Switch
+              value={emailNotificationsEnabled}
+              onValueChange={setEmailNotificationsEnabled}
+              thumbColor={isDarkMode ? "#4B9CD3" : "#FFFFFF"}
+              trackColor={{ false: "#E5E5E5", true: "#4B9CD3" }}
+            />
+          </View>
+
+          <View style={[baseStyles.option, dynamicStyles.option]}>
+            <Text style={[baseStyles.optionText, dynamicStyles.text]}>
+              Promotional Notifications
+            </Text>
+            <Switch
+              value={promotionalNotificationsEnabled}
+              onValueChange={setPromotionalNotificationsEnabled}
+              thumbColor={isDarkMode ? "#4B9CD3" : "#FFFFFF"}
+              trackColor={{ false: "#E5E5E5", true: "#4B9CD3" }}
+            />
+          </View>
+        </>
+      )}
+
+      <TouchableOpacity
+        style={[baseStyles.button, dynamicStyles.button]}
+        onPress={handleLoginSignup}
+      >
         <Text style={baseStyles.buttonText}>Login or Sign Up</Text>
       </TouchableOpacity>
 
-      {/* Feedback Modal */}
       <Modal
         visible={feedbackModalVisible}
         animationType="slide"
@@ -206,20 +183,31 @@ const SettingsScreen = () => {
           </View>
         </View>
       </Modal>
+
+      <View style={[baseStyles.option, dynamicStyles.option]}>
+        <Text style={[baseStyles.optionText, dynamicStyles.text]}>
+          {isDarkMode ? "Light Mode" : "Dark Mode"}
+        </Text>
+        <Switch
+          value={isDarkMode}
+          onValueChange={toggleTheme} // Use global toggle function
+          thumbColor={isDarkMode ? "#4B9CD3" : "#FFFFFF"}
+          trackColor={{ false: "#E5E5E5", true: "#4B9CD3" }}
+        />
+      </View>
     </View>
   );
 };
 
-// Base styles shared by light and dark modes
 const baseStyles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
   },
   option: {
-    flexDirection: "column", // This ensures vertical stacking of content
-    justifyContent: "flex-start", // Aligns the elements to the top
-    alignItems: "stretch", // Ensures elements take the full width
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     padding: 15,
     marginVertical: 10,
     borderRadius: 8,
@@ -233,7 +221,6 @@ const baseStyles = StyleSheet.create({
     position: "absolute",
     bottom: 20,
     alignSelf: "center",
-    backgroundColor: "#4B9CD3",
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 8,
@@ -245,8 +232,6 @@ const baseStyles = StyleSheet.create({
     fontWeight: "600",
   },
   submitButton: {
-    position: "relative",
-    bottom: 0,
     backgroundColor: "#4B9CD3",
   },
   modalOverlay: {
@@ -259,9 +244,8 @@ const baseStyles = StyleSheet.create({
     width: "80%",
     padding: 20,
     borderRadius: 8,
-    flexDirection: "column", // Ensure content inside modal is stacked vertically
-    justifyContent: "flex-start",
-    alignItems: "stretch", // Stretch elements to take the full width
+    justifyContent: "center",
+    alignItems: "center",
   },
   feedbackInput: {
     height: 150,
@@ -270,7 +254,7 @@ const baseStyles = StyleSheet.create({
     marginVertical: 25,
     padding: 10,
     textAlignVertical: "top",
-    width: "100%", // Ensures the input takes up full width
+    width: "100%",
   },
   closeButton: {
     position: "absolute",
@@ -281,33 +265,35 @@ const baseStyles = StyleSheet.create({
 
 const lightStyles = StyleSheet.create({
   container: {
-    ...baseStyles.container,
     backgroundColor: "#FFFFFF",
   },
   text: {
     color: "#2A4D69",
   },
   option: {
-    ...baseStyles.option,
     backgroundColor: "#F7F7F7",
     borderColor: "#E5E5E5",
     borderWidth: 1,
+  },
+  button: {
+    backgroundColor: "#1abc9c",
   },
 });
 
 const darkStyles = StyleSheet.create({
   container: {
-    ...baseStyles.container,
     backgroundColor: "#121212",
   },
   text: {
     color: "#E5E5E5",
   },
   option: {
-    ...baseStyles.option,
-    backgroundColor: "#1E1E1E",
+    backgroundColor: "#343131",
     borderColor: "#333333",
     borderWidth: 1,
+  },
+  button: {
+    backgroundColor: "#343131",
   },
 });
 
